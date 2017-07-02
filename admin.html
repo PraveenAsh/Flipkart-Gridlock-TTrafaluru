@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+	
+    <title>ADMIN</title>
+	<style>
+	
+      #right-panel {
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+      }
+
+      #right-panel select, #right-panel input {
+        font-size: 15px;
+      }
+
+      #right-panel select {
+        width: 100%;
+      }
+
+      #right-panel i {
+        font-size: 12px;
+      }
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+        float: left;
+        width: 70%;
+        height: 100%;
+      }
+      #right-panel {
+        margin: 20px;
+        border-width: 2px;
+        width: 20%;
+        height: 400px;
+        float: left;
+        text-align: left;
+        padding-top: 0;
+      }
+      #directions-panel {
+        margin-top: 10px;
+        background-color: #FFEE77;
+        padding: 10px;
+        overflow: scroll;
+        height: 174px;
+      }
+    </style>
+	<script>
+	</script>
+  </head>
+  <body onload="ISTime()">
+    <div id="map"></div>
+    <div id="right-panel">
+	<div><h1>ADMIN DASHBOARD</h1><div id="timeBox">time</div></div>
+    <div>
+    <b>Start:</b>
+    <select id="start">
+      <option value="Hulimavu, Bangalore">Hulimavu</option>
+      <option value="International Tech Park, Bangalore">ITPL</option>
+      <option value="Kempegowda Air Port, Banglore ">Kia</option>
+      <option value="Rajajinagar, Banglore">Rajajinagar</option>
+    </select>
+    <br>
+    <b>Waypoints:</b> <br>
+    <i>(Ctrl+Click or Cmd+Click for multiple selection)</i> <br>
+    <select multiple id="waypoints">
+      <option value="Central Silk Board , Bangalore">Silk Board</option>
+      <option value="Jayadeva Hospital Bus Stop , Bangalore">Jaydeva</option>
+      <option value="Bagmane Tech Park , Bangalore">BCH</option>
+      <option value="Kormangla , Banglore">Kormangla</option>
+      <option value="Madivala, Banglore">Madivala</option>
+      <option value="calgary, ab">Calgary</option>
+      <option value="spokane, wa">Spokane</option>
+    </select>
+    <br>
+    <b>End:</b>
+    <select id="end">
+      <option value="International Tech Park, Bangalore">ITPL</option>
+      <option value="Central Silk Board , Bangalore">Silk Board</option>
+      <option value="Hulimavu, Bangalore">Hulimavu</option>
+      <option value="Mejestic, Banglore">Mejestic</option>
+      <option value="MG road, Banglore">mg road</option>
+    </select>
+    <br>
+      <input type="submit" id="submit">
+	  <input type="submit" id="check" value="Check">
+	  
+    </div>
+    <div id="directions-panel"></div>
+    </div>
+    <script>
+	var copyRoute;
+	var locations = [
+			[12.91732229, 77.62274802 ],
+			[12.99989, 77.676281],
+			[12.97261452, 77.61962324],
+			[12.93708269, 77.60165895],
+			[12.93052432, 77.5435102],
+			[12.9420036	,77.6083044],
+			[12.92511028,	77.63365458],
+			[12.93146086,	77.62249153],
+			[12.92771531,	77.62109971],
+			[12.92399842,	77.62855732],
+			[12.9343296	,77.6301217],
+			[12.85024591,	77.58832725],
+			[12.94916909,	77.6204],
+			[12.9372718	,77.626893],
+			[12.93719664,	77.62691],
+			[12.93165593,	77.6226741],
+			[12.96878275,	77.59683322],
+			[12.93478214,	77.61220427],
+			[12.9695339	,77.6410614],
+			[12.9312885	,77.68554337],
+			[13.19864068,	77.70659213],
+			[12.939432	,77.69520679],
+			[13.0493945,	77.6029011],
+			[12.9518706	,77.7000912],
+			[12.9553828,	77.6894472],
+			[12.9527039,	77.6052245],
+			[12.95268386,	77.6052171],
+			[12.97139847,	77.60699674],
+			[12.97637082,	77.60248744],
+			[12.96623693,	77.60678875],
+			[12.95236539,	77.62027595],
+			[12.96441243,	77.60676205],
+			[12.96797832,	77.60034123],
+			[12.96914179,	77.61540763],
+			[12.96712816,	77.61122796],
+			[12.96383156,	77.60668646],
+			[12.96249531,	77.61897932],
+			[12.97204313,	77.6011143],
+			[12.9616961,	77.61253791],
+			[12.96007211,	77.60166585],
+			[13.01327856,	77.69974887],
+			[12.97138651,	77.60699986],
+			[12.97187483,	77.60699272],
+			[12.9648633,	77.59688177],
+			[12.97035881,	77.61028785],
+			[12.9290427,	77.56500636],
+			[12.92565062,	77.54953782],
+			[12.91760368,	77.57359049],
+			[12.92223196,	77.55890608],
+			[12.933627,	77.539478],
+			[12.91515054,	77.53554539],
+			[12.9207989,	77.5782749],
+			[12.92327523,	77.553332],
+			[12.93386169,	77.55844999],
+			[12.95232936,	77.57363495],
+			[12.92988639,	77.5707168],
+			[12.92972932,	77.54417066],
+			[12.9377336,	77.549713],
+			[12.92729346,	77.57666468],
+			[13.06646729,	77.65178184],
+			[13.02854452,	77.66356821],
+			[13.02783043,	77.640161],
+			[13.0245357,	77.637149],
+			[13.0409756,	77.6234293],
+			[13.0151635	,77.6369404],
+			[12.936695,	77.574019],
+			[12.95705152,	77.56336043],
+			[12.9435396,	77.56336043],
+			[12.9483203,	77.5802822],
+			[12.94804207,	12.94804207],
+			[12.9446458,	77.579897],
+			[12.9482348,	77.5738872],
+			[12.93561331,	77.56041452],
+			[12.95991164,	77.52942763],
+			[12.96088373,	77.52803886],
+			[12.925041,	77.4852687],
+			[12.9127909,	77.4856676],
+			[12.3046838,	76.6020092],
+			[12.2873014,	76.6022778],
+			[12.95274104,	77.54368991],
+			[12.93459937,	77.53454859],
+			[12.96025158,	77.55922568],
+			[13.02229437,	77.61265486],
+			[12.96055804,	77.57173459],
+			[12.96047065,	77.56857329],
+			[12.96127183,	77.55919173],
+			[13.02226676,	77.55137627],
+			[13.19088931,	77.64595315],
+			[13.16111351,	77.62697048],
+			[12.96808902,	77.57473282],
+			[12.96892441,	77.57025818],
+			[12.9697446,	77.57569134],
+			[12.9747843,	77.5706566],
+			[12.98437476,	77.58229236],
+			[12.97307995,	77.60127896],
+			[12.97921822,	77.602427],
+			[12.9753119,	77.6143688],
+			[12.98185193,	77.5946873],
+			[12.98561498,	77.60554433],
+			[12.98325226,	77.595824],
+			[12.98085486,	77.59735416],
+			[12.97658448,	77.59926304],
+			[13.10365432,	77.60027111],
+			[13.30295437,	77.5494647],
+			[13.26758963,	77.71971735],
+			[13.29600059,	77.80045509],
+			[12.84514064,	77.66014338],
+			[12.84622005,	77.67241829],
+			[12.87033049,	77.65833288],
+			[12.85075643,	77.66017627],
+			[12.83605043,	77.67939091],
+			[12.83900034,	77.65886664],
+			[13.02779515,	77.63259172],
+			[13.00057056,	77.61606752],
+			[13.00012827,	77.62024935],
+			[13.04220751,	77.61364323],
+			[13.04740741,	77.57584656],
+			[13.04272795,	77.59031075],
+			[13.05733141,	77.59339658],
+			[13.06832734,	77.56039337],
+			[12.98561195,	77.60552289],
+			[12.96847948,	77.6143152],
+			[12.95499198,	77.56571889],
+			[12.99833415,	77.56938377],
+			[12.98086337,	77.65698371],
+			[12.98756031,	77.57223508],
+			[12.98648125,	77.57971791],
+			[12.97534803,	77.57615493],
+			[12.90512366,	77.4711083],
+			[12.97124132,	77.65878581],
+			[12.99687549,	77.57324652],
+			[12.97483557,	77.57082302],
+			[12.97834902,	77.64086366],
+			[12.97168727,	77.63600539],
+			[12.96602778,	77.53545821],
+			[12.97824905,	77.63667873],
+			[12.97034335,	77.64550531],
+			[12.93723932,	77.626917],
+			[12.9669303,	77.6371009],
+			[12.9233643,	77.5859103],
+			[12.9071,	77.5950059],
+			[12.91728416,	77.57972986],
+			[12.91728416,	77.57972986],
+			[12.93627481,	77.5801692],
+			[12.92329236,	77.58120621],
+			[12.9563257,	77.5772155],
+			[12.967643,	77.571341],
+			[12.96929956,	77.57945006],
+			[12.9783484,	77.5683983],
+			[12.97094942,	77.64735365],
+			[13.00583218,	77.69516185],
+			[12.9711857,	77.6367389],
+			[13.0022997,	77.609241],
+			[13.01841573,	77.67809233],
+			[12.9720888,	77.694364],
+			[12.8574561,	77.5280225],
+			[12.911754,	77.599145],
+			[12.92418909,	77.61856881],
+			[12.9241959,	77.6181229],
+			[12.9030319,	77.6274124],
+			[12.8957938,	77.6360226],
+			[12.9158655,	77.6379193],
+			[12.922051,	77.665224],
+			[12.890984,	77.6400098],
+			[12.9329008,	77.613274],
+			[12.8611039,77.7824803],
+			[12.9178576,	77.6245243],
+			[12.924177,	77.6185668],
+			[12.9745275,	77.5521003],
+			[12.9720602,	77.5490448],
+			[12.9779812,	77.5427307],
+			[12.9740859,	77.5520529],
+			[12.9937778,	77.5538924],
+			[13.004056,	77.55349],
+			[12.9984805,	77.5698612],
+			[13.00952843,	77.56285577],
+			[13.0071907,	77.5643174],
+			[13.00449633,	77.56924331],
+			[13.0000643,	77.5713141],
+			[12.99804996,	77.55279134],
+			[13.00441395,	77.54917776],
+			[12.9992906,	77.5507168],
+			[12.98258315,	77.56837835],
+			[12.9130934,	77.6144687],
+			[12.91601985,	77.61517821],
+			[12.8905639,	77.5980757],
+			[12.89479087,	77.6092338],
+			[12.91977583,	77.61030391],
+			[12.93720294,	77.60208542],
+			[12.9205765,	77.6001134],
+			[12.87599374,	77.59601873],
+			[12.9081699,	12.9081699],
+			[12.9193434,	77.6001594],
+			[12.912443,	77.5906827],
+			[12.9280031,	77.599599],
+			[12.92848031,	77.5947519],
+			[13.0186636,	77.50134123],
+			[13.06701834,	77.50315775],
+			[13.13422625,	77.47893551],
+			[13.0404633,	77.51862265],
+			[13.02506038,	77.51107198],
+			[13.01089967,	77.5068395],
+			[13.02845927,	77.51971894],
+			[13.034208,	77.530357],
+			[12.9775683,	77.5683443],
+			[12.97170426,	77.63599332],
+			[13.01822029,	77.5315583],
+			[12.9775683,	77.5683443],
+			[12.99452106,	77.55459239],
+			[13.01749286,	77.59122974],
+			[12.9925406,	77.56324174],
+			[13.03516387,	77.57097244],
+			[13.03193799,	77.55933739],
+			[13.0247282,	77.5931992],
+			[13.0204384,	77.5947093],
+			[13.009466,	77.583639],
+			[13.0146218,	77.5722528],
+			[13.0944194,	77.576163],
+			[13.0041396,	77.56926237],
+			[12.99268301,	77.60974378],
+			[12.99362932,	77.60742615],
+			[12.9717203,	77.6067091],
+			[12.99058927,	77.59956265],
+			[12.9936898,	77.5981422],
+			[12.97630638,	77.61471144],
+			[12.98192322,	77.6318568],
+			[12.9667653,	77.6206275],
+			[12.96119164,	77.63801458],
+			[12.9690342,	77.6134605],
+			[12.9775683,	77.5683443],
+			[12.97849275,	77.62877891],
+			[12.9775683,	77.5683443],
+			[12.9229472,	80.2289944],
+			[12.89155858,	77.58232613],
+			[12.91225623,	77.63809309],
+			[12.91183861,	77.63245368],
+			[12.9260308,	77.6762463],
+			[12.9486445,	77.5765166],
+			[13.13605087,	77.6045909],
+			[13.00350792,	77.57084599],
+			[13.06763364,	77.63350637],
+			[13.24544922,	77.71270259],
+			[12.77911548,	77.64350159],
+			[12.92173921,	77.58376213],
+			[12.9902684,	77.5495395],
+			[13.05748948,	77.59323028],
+			[12.99686082,	77.56938479],
+			[12.92460833,	77.64991546],
+			[12.90935046,	77.54590913],
+			[12.92174444,	77.58378493],
+			[12.92566187,	77.5463292],
+			[12.97769979,	77.59080677],
+			[12.9796958,	77.5925518],
+			[12.9866437,	77.5212264],
+			[12.96109311,	77.51063323],
+			[13.0028461,	77.5940921],
+			[12.94698758,	77.59778649]
+		];
+	function initMap() {
+        var directionsService = new google.maps.DirectionsService;
+        var directionsDisplay = new google.maps.DirectionsRenderer;
+        var directionsDisplay1 = new google.maps.DirectionsRenderer;
+        var trafficLayer = new google.maps.TrafficLayer();
+		console.log(trafficLayer);
+		var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 12,
+          center: {lat: 12.9716, lng: 77.5946}
+        });
+		var image = new google.maps.MarkerImage("https://d30y9cdsu7xlg0.cloudfront.net/png/36915-200.png", null, null, null, new google.maps.Size(20,20));
+		var userIm = new google.maps.MarkerImage("http://www.myiconfinder.com/uploads/iconsets/256-256-89fdce5084dbe77556cf99f7b22ae7e8-pin.png", null, null, null, new google.maps.Size(25,25));
+		var users = [
+			[13.00226213,77.56418671],
+			[12.96753679,77.62493126],
+			[12.89437512,77.66158245],
+			[13.06164523,77.56780645],
+			[13.04067156,77.59148229],
+			[12.94162906,77.55914689],
+			[12.96623586,77.68691711],
+			[12.96661685,77.52015068],
+			[12.89919088,77.59249107],
+			[13.02881506,77.64496488],
+			[12.91730661,77.62272924],
+			[12.91718635,77.62241811],
+			[12.91721772,77.622343],
+			[12.91710269,77.62225717],
+			[12.91714975,77.62216598],
+			[12.91702949,77.62213379],
+			[12.91710269,77.62200773],
+			[12.91706086,77.6219447],
+			[12.91705825,77.62187228],
+			[12.91699027,77.62187496],
+			[12.91700857,77.62174621],
+			[12.91691707,77.62170598],
+			[12.91693537,77.62159601],
+			[12.99989, 77.676281],
+			[12.97261452, 77.61962324],
+			[12.93708269, 77.60165895],
+			[12.93052432, 77.5435102],
+			[12.9173955	,77.62303099],
+			[12.91729354	,77.62288347],
+			[12.91736935	,77.62325898],
+			[12.91740334	,77.6233609],
+			[12.91744	    ,77.62372568],
+			[12.91744778	,77.62389198],
+			[12.91748961	,77.62407973],
+			[12.91763601	,77.62428895],
+			[12.91753667	,77.62443915],
+			[12.91752621	,77.62464836],
+			[12.91771967	,77.62482539],
+			[12.91763601	,77.62499705],
+			[12.91760987	,77.62526527],
+			[12.91757327	,77.62542084],
+			[12.91763078	,77.62557104],
+			[12.91749484	,77.62579635],
+			[12.91747393	,77.62618795],
+			[12.91735367	,77.62633279],
+			[12.91742687	,77.62656346],
+			[12.91732752	,77.62670293],
+			[12.91724909	,77.62682632],
+			[12.91726739	,77.62706235],
+			[12.91711053	,77.62717232],
+			[12.91722556	,77.62730375],
+			[12.91708178	,77.62739226],
+			[12.91713406	,77.62750491],
+			[12.91703733	,77.62753978],
+			[12.91711053	,77.62763903],
+			[12.91698243	,77.62773022],
+			[12.91704779	,77.62786701],
+			[12.91694844	,77.62793139],
+			[12.91698243	,77.6279287],
+			[12.91699812	,77.62789384],
+			[12.9170138	,77.62786165],
+			[12.91691969	,77.62796894],
+			[12.91691969	,77.62799039],
+			[12.91689616	,77.62803867],
+			[12.91724648	,77.62230948],
+			[12.91718896	,77.62220219],
+			[12.91713668	,77.62211904],
+			[12.91701903	,77.6220037],
+			[12.91707655	,77.62188032],
+			[12.91701903	,77.62192324],
+			[12.91706347	,77.62178108],
+			[12.91697197	,77.62184277],
+			[12.91694322	,77.62188569],
+			[12.91696674	,77.6217784],
+			[12.9169772	,77.62168452],
+			[12.91687786	,77.62163892],
+			[12.91693276	,77.62147799],
+			[12.91682557	,77.6214619]
+					];
+		var dots = [];
+		for (i = 0; i < users.length; i++) {
+			var userMarker = new google.maps.Marker({ 
+				position: new google.maps.LatLng(users[i][0], users[i][1]),
+				icon:userIm,
+				map: map,
+				title: 'users'
+			});
+		}
+		for (i = 0; i < locations.length; i++) {
+			var marker = new google.maps.Marker({ 
+				position: new google.maps.LatLng(locations[i][0], locations[i][1]),
+				icon:image,
+				map: map,
+				title: 'Traffic Signal'
+			});
+			var p1 = new google.maps.LatLng(12.91732229, 77.62274802);
+			if(checkInRange( p1,new google.maps.LatLng(locations[i][1], locations[i][2]))==true){
+				var range = true;
+			}
+			else var range = false;
+		}
+        directionsDisplay.setMap(map);
+        trafficLayer.setMap(map);
+        document.getElementById('submit').addEventListener('click', function() {
+			calculateAndDisplayRoute(directionsService, directionsDisplay);
+        });
+      }
+	  
+	  
+      function calculateAndDisplayRoute(directionsService, directionsDisplay) {
+		var waypts = [];
+		var checkboxArray = document.getElementById('waypoints');
+		for (var i = 0; i < checkboxArray.length; i++) {
+			if (checkboxArray.options[i].selected) {
+				waypts.push({
+					location: checkboxArray[i].value,
+					stopover: true
+				});
+			}
+		}
+        directionsService.route({
+			origin: document.getElementById('start').value,
+			destination: document.getElementById('end').value,
+			waypoints: waypts,
+			optimizeWaypoints: true,
+			provideRouteAlternatives: true,
+			travelMode: 'DRIVING',
+			transitOptions: {
+				departureTime: new Date( Date.now() )
+			},
+		},	function(response, status) {
+				if (status === 'OK') {
+						var temp = new Date( Date.now());
+						console.log(new Date( Date.now()));
+						window.alert( new Date( Date.now()) +"\n"+ new Date( Date.now() + 3660*1000));
+						console.log(response.routes);
+						copyRoute = response.routes;
+						directionsDisplay.setRouteIndex(0);
+						var rr = directionsDisplay;
+						rr.setRouteIndex(1);
+						directionsDisplay.setDirections(response);				
+						rr.setDirections(response);
+						
+						var summaryPanel = document.getElementById('directions-panel');
+						summaryPanel.innerHTML = '';
+						
+						var route = response.routes[0];
+						for (var i = 0; i < route.legs.length; i++) {
+						var routeSegment = i + 1;
+						summaryPanel.innerHTML += '<b>Route Segment: ' + routeSegment +'</b><br>';
+						summaryPanel.innerHTML += route.legs[i].start_address + ' to ';
+						summaryPanel.innerHTML += route.legs[i].end_address + '<br>';
+						summaryPanel.innerHTML += route.legs[i].duration.text + '<br><br>';						
+						summaryPanel.innerHTML += route.legs[i].distance.text + '<br><br>';
+						summaryPanel.innerHTML +=  '<b>steps are : </b>'+ route.legs[i].steps.length+'<br><br>';
+						var routeStep = route.legs[i];
+						for (var j = 0; j < route.legs[i].steps.length; j++) {
+							var rulesMessage;
+							switch(routeStep.steps[j].maneuver) {
+								case "straight" :
+									rulesMessage = "Please follow a lane. Incase of switching lanes please use indicators";
+									break;
+								case "turn-right" :
+									rulesMessage = "Turn on right side indicator and take a smooth right turn ";
+									break;
+								case "turn-left" :
+									rulesMessage = "Turn on left side indicator and take a smooth left turn ";
+									break;
+								case "keep-left" :
+									rulesMessage = "Keep left to avoid traffic congestion and constrictions.Use indicator to switch lanes";
+									break;
+								case "keep-right" :
+									rulesMessage = "Keep right to avoid traffic congestion and constrictions.Use indicator to switch lanes";
+									break;
+								case "turn-sharp-left" :
+									rulesMessage = "Turn on left side indicator.Please make sure you have a clear sight while taking sharp turns.";
+									break;
+								case "turn-sharp-right" :
+									rulesMessage = "Turn on right side indicator.Please make sure you have a clear sight while taking sharp turns.";
+									break;
+								case "uturn-left" :
+									rulesMessage = "Turn on left side indicator.Please make sure you allow other vehicles passage";
+									break;
+								case "uturn-right" :
+									rulesMessage = "Turn on right side indicator.Please make sure you allow other vehicles passage";
+									break;
+								default:
+									rulesMessage = "Please foloow traffic instincts to avoid creating traffic congestions";
+							}
+							//alert("Sign : "+routeStep.steps[j].maneuver+"\n"+rulesMessage+"\n"+retSpeedMessage());//routeStep.steps[j].distance.text+"\n"+routeStep.steps[j].start_point.lat.length);
+						}
+						var dot = new google.maps.MarkerImage("https://lh3.googleusercontent.com/5OM8W6oF0NdKd_8aEKlpSybDejudy-AFsxT6E3p_Acb9iLNCrdQXwhXwJhsNcVAJNhs=w300", null, null, null, new google.maps.Size(32,32));
+						route.legs.forEach(function(leg){
+							leg.steps.forEach(function(step){
+								step.path.forEach(function(point){
+									//debug_panel.innerHTML+=point+"<br/>";
+									//console.log(point.lat()+ "," +point.lng());
+									for (var c = 0; c < locations.length; c++) {
+										var p1 = new google.maps.LatLng(locations[c][1],locations[c][1]);
+										if(checkInRange( p1,new google.maps.LatLng(point.lat(),point.lng()))==true){
+											alert(p1 +"is in range");
+										}
+										else var range=false;
+									}
+								});
+							});
+						});
+					}
+				}
+				else {
+					window.alert('Directions request failed due to ' + status);
+				}						
+			});
+}
+	  
+	
+
+	function checkInRange(sigPo,curPo){
+	  var raduis = 10000;
+	  var distanceInMetres = google.maps.geometry.spherical.computeDistanceBetween(sigPo,curPo);
+	  if(distanceInMetres < raduis){
+		return true;
+	  }
+	  else return false;
+	  }
+	  
+	function retSpeedMessage(){
+		var speedMessage;
+		var currentSpeed = getCurSpeed();
+		var speedLimitCurRoad = getSpeedLimit();
+		if(currentSpeed > speedLimitCurRoad){
+			speedMessage = "OVER SPEEDING , SLOW DOWN.Retire immediatly";
+		}
+		else{
+			var speedPerecentage = currentSpeed/speedLimitCurRoad ;
+			switch(true){
+				case (speedPerecentage > 0.95) :
+					speedMessage = "OVER SPEEDING YET , PLEASE SLOW DOWN";
+					break;
+				case(speedPerecentage <= 0.95 && speedPerecentage > .85 ) :
+					speedMessage = "SPEED SLIGHTLY HIGHER , REDUCE SPEED";
+					break;
+				case(speedPerecentage <= 0.85 && speedPerecentage > .70) :
+					speedMessage = "SPEED IS OPTIMUM , MAINTAIN SPEED";
+					break;
+				case(speedPerecentage <= 0.7 && speedPerecentage > .50) :
+					speedPerecentage = "SLIGHTLY INCREASE YOUR SPEED , SPEED BELOW AVERAGE ";
+					break;
+				case(speedPerecentage < 0.50) :
+					speedMessage = "INCREASE YOUR SPEED , YOU MIGHT BE CAUSING TRAFFIC";
+					break;
+				default :
+					speedMessage = "Unable to retrive speed ,checking internet connection";
+			}
+		}
+		return speedMessage ;
+	}
+	function getCurSpeed(){
+		return getRandomInt(45 , 97);
+	}
+	function getRandomInt(min, max) {
+		return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
+	function getSpeedLimit(){
+		var limit = 80;
+		return limit;
+	}
+	
+	  /*  -----------------------------------------------------------   MY CODE PURELY FROM HERE  -----------------------------------------------------------  */
+	  
+	//Standard/Global Variable
+	var greenSignalTime = 60 ;
+	var yellowSignalTime = 5 ;
+	var numberOfRoadsMeet = 4 ;
+	var averageSpeed = 5.62 ;
+	
+	
+	
+	var signalOpenDur = getSignalOpenDur( greenSignalTime , yellowSignalTime );
+	var cycleDur = getCycleDur( signalOpenDur );	
+	
+	function getSignalOpenDur( GST , YST ){
+		var signalOpenDur = GST + YST ;
+		//window.alert("signalOpenDur = " + signalOpenDur );
+		return signalOpenDur ;
+	}
+	
+	function getCycleDur( signalOpenDur ) {
+		var lolcycleDur = numberOfRoadsMeet * signalOpenDur ;
+		//window.alert("cycleDur = " + lolcycleDur );
+		return lolcycleDur ;
+	}
+	
+	function ISTime(){
+	document.getElementById('timeBox').innerHTML = "im in the function ";
+		var date = new Date();
+		var hour = date.getHours();
+		var minute = date.getMinutes();
+		var second = date.getSeconds();
+		
+		minute = addZero(minute);
+		second = addZero(second);
+		
+		//Displaying in HTML only
+		document.getElementById('timeBox').innerHTML = hour + ":" + minute + ":" + second ;		
+		//keep the time ticking
+		var t = setTimeout(ISTime, 500);			
+		}
+	
+				
+	//depends on the ISTime() function
+	function addZero(time) {
+		if( time < 10 ) { time = "0" + time };
+		return time;
+		}
+	
+	
+
+	function getETA(){
+		var estimatedTime = junctionDist / averageSpeed ;
+		return estimatedTime ;
+	}
+	
+	
+var GoogleCalenderAppointments = null;
+var today = new Date();
+var lastDay = new Date(today);
+var forDays = 1;
+var signalDur = [];
+var signalBeginHour = 7 ;
+var signalEndHour = 22 ;
+var collectionSlots = new Object();
+
+lastDay.setDate(today.getDate() + forDays);
+
+function checkGoogleCalendarConflict(date) {
+  var hasConflict = false;
+  if (!GoogleCalenderAppointments) {
+    //logic to get scheduled appointments
+  }
+  //iterate through relevant scheduled appointments
+  //if argument `date` has conflict, return true
+  //else, return false
+  return hasConflict
+}
+
+function getTimeSlotsForDay(date) {
+  var timeSlots = []
+  var dayStart = new Date(date)
+  var dayEnd = new Date(date)
+
+  switch (date.getDay()) {
+    case 0: //Sunday
+      return timeSlots;
+    case 6: //Saturday
+      dayStart.setHours(10, 0, 0, 0)
+      dayEnd.setHours(20, 0, 0, 0)
+      break;
+    default:
+      dayStart.setHours( signalBeginHour, 0, 0, 0)
+      dayEnd.setHours( signalEndHour, 0, 0, 0)
+  }
+  do {
+    if (!checkGoogleCalendarConflict(dayStart)) {
+      timeSlots.push(new Date(dayStart))
+    }
+    dayStart.setHours(dayStart.getHours(), dayStart.getMinutes() + 3 || signalDur )
+  } while (dayStart < dayEnd);
+  return timeSlots
+}
+var n = 0;
+for (var i = new Date(today); i < lastDay; i.setDate(i.getDate() + 1)) { 
+  collectionSlots[n]=getTimeSlotsForDay(i);
+  n++;
+}
+
+
+	/*------------------------------------------------------------------- PART TWO ----------------------------------------------------------------------------*/
+
+	/*function setDepatureTime(){
+		var departureStatus = '';
+		document.getElementById('NOW').addEventListener('click', function() {
+			if(document.getElementById('NOW').value == 'LEAVE NOW'){
+				departureStatus = 'LEAVE NOW';
+			}
+			else
+				departureStatus = 'PICK TIME';
+		});		
+		var depTime = '';
+		if( departureStatus == 'LEAVE NOW' ){
+			var date = new Date();
+			var hour = date.getHours();
+			var minute = date.getMinutes();
+			var second = date.getSeconds();
+			minute = addZero(minute);
+			second = addZero(second);
+			time =  hour + ":" + minute + ":" + second ;
+			return depTime;
+		}
+		else {
+			depTime = document.getElementById('timeBox').value ;
+			return depTime;
+		}
+	}
+	
+	*/
+	
+
+		/*
+
+function isInsideSector(point, center, sectorStart, sectorEnd, radiusSquared) {
+  var relPoint = {
+    x: point.x - center.x,
+    y: point.y - center.y
+  };
+
+  return !areClockwise(sectorStart, relPoint) &&
+         areClockwise(sectorEnd, relPoint) &&
+         isWithinRadius(relPoint, radiusSquared);
+}
+
+function areClockwise(v1, v2) {
+  return -v1.x*v2.y + v1.y*v2.x > 0;
+}
+
+function isWithinRadius(v, radiusSquared) {
+  return v.x*v.x + v.y*v.y <= radiusSquared;
+}
+
+$(function() {
+  var $canvas = $("#canvas");
+  var canvasSize = 400;
+  var count = 1000;
+
+  // define the sector
+  var center = { x: canvasSize / 2, y: canvasSize / 2 };
+  var sectorStart = { x: 4, y: 1 };
+  var sectorEnd = { x: 1, y: 4 };
+  var radiusSquared = canvasSize * canvasSize / 4;
+
+  // create, draw and test a number of random points
+  for (var i = 0; i < count; ++i) {
+    
+    // generate a random point
+    var point = {
+      x: Math.random() * canvasSize,
+      y: Math.random() * canvasSize
+    };
+    
+    // test if the point is inside the sector
+    var isInside = isInsideSector(point, center, sectorStart, sectorEnd, radiusSquared);
+    
+    // draw the point
+    var $point = $("<div class='dot'></div>")
+        .css({
+          left: point.x - 3,
+          top:  canvasSize - point.y - 8 })
+        .html("&#8226;")
+        .addClass(isInside ? "in" : "out")
+        .appendTo($canvas);
+  }
+});
+
+		*/	
+	
+
+    </script>
+    <script type="text/javascript" src="js/createSlot.js"></script>
+	<script type="text/javascript" src="js/allotSlot.js"></script>
+	<script async defer
+    src="https://maps.googleapis.com/maps/api/js?&libraries=geometry&key=AIzaSyD1ootnoC3lZr0rkRKqE07jCUJicuvsGzI&callback=initMap">
+    </script>
+  </body>
+</html>

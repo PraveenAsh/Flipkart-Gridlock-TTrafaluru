@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html >
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+  <meta charset="UTF-8">
+  <title>User Dashboard</title>
+  <link href='https://fonts.googleapis.com/css?family=Josefin+Sans&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="https://cdn.rawgit.com/konpa/devicon/master/devicon.min.css">
+  <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.2/raphael-min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.0/morris.min.js'></script>
+  
+  <link rel='stylesheet prefetch' href='http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css'>
+
+      <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+  
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 col-md-offset">
+        <div class="title text-center">
+          <h1>User Dashboard</h1>
+          <div class="holder">
+            <div class="top">
+            <div class="speed"><H2>AVERAGE speed is 12.5 kmph</H2></div>
+              <div class="noise"><H2>Traffic Noise is 78%</H2></div>
+              <div class="vehicle"><H2>XUV 500,car capacity : 6 </H2></div>
+              <div class="users"><H2>HUGK JACKMAN</H2></div>
+            </div>
+            <div class="main">
+              <div class="directions">
+			  <div class="inputs">
+			  
+			  <input type="text" id="start" name="destination" placeholder="Start">			  
+			  <input type="text" id="end" name="origin" placeholder="End">			  
+			  <select id="waypoints">
+				  <option value="Central Silk Board , Bangalore">Silk Board</option>
+				  <option value="Jayadeva Hospital Bus Stop , Bangalore">Jaydeva</option>
+				  <option value="Bagmane Tech Park , Bangalore">BCH</option>
+				  <option value="Kormangla , Banglore">Kormangla</option>
+				  <option value="Madivala, Banglore">Madivala</option>
+				  <option value="calgary, ab">Calgary</option>
+				  <option value="spokane, wa">Spokane</option>
+				</select>
+			  <div>
+			  <select>
+  <option value="driving">driving</option>
+  <option value="transit">transit</option>
+  <option value="bicycle">bicycle</option>
+  <option value="walk">walk</option>
+</select>
+			  </div>
+      <input type="submit" id="submit" value="New Trip">
+      <input type="submit" id="check" value="Check slot">
+
+			  </div>
+			</div>
+			              <div id="map" class="map"></div>
+
+              <div id="data" class="data"></div>
+            </div>                 </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  
+  <script> 
+  
+	function initMap() {
+        var directionsService = new google.maps.DirectionsService;
+        var directionsDisplay = new google.maps.DirectionsRenderer;
+        var directionsDisplay1 = new google.maps.DirectionsRenderer;
+        var trafficLayer = new google.maps.TrafficLayer();
+		console.log(trafficLayer);
+		var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 11,
+          center: {lat: 12.9716, lng: 77.5946}
+        });
+		/*
+		var image = new google.maps.MarkerImage("https://d30y9cdsu7xlg0.cloudfront.net/png/36915-200.png", null, null, null, new google.maps.Size(32,32));
+		var userIm = new google.maps.MarkerImage("http://www.myiconfinder.com/uploads/iconsets/256-256-89fdce5084dbe77556cf99f7b22ae7e8-pin.png", null, null, null, new google.maps.Size(32,32));
+		var locations = [
+		  ['Silk Board',12.91732229, 77.62274802 ],
+		  ['K R Puram',12.99989, 77.676281],
+		  ['M G Road', 12.97261452, 77.61962324],
+		  ['Diary Circle', 12.93708269, 77.60165895],
+		  ['Hoskerehalli', 12.93052432, 77.5435102]
+		];
+		var users = [
+			[13.00226213,77.56418671],
+			[12.96753679,77.62493126],
+			[12.89437512,77.66158245],
+			[13.06164523,77.56780645],
+			[13.04067156,77.59148229],
+			[12.94162906,77.55914689],
+			[12.96623586,77.68691711],
+			[12.96661685,77.52015068],
+			[12.89919088,77.59249107],
+			[13.02881506,77.64496488],
+			[12.91730661,77.62272924],
+			[12.91718635,77.62241811],
+			[12.91721772,77.622343],
+			[12.91710269,77.62225717],
+			[12.91714975,77.62216598],
+			[12.91702949,77.62213379],
+			[12.91710269,77.62200773],
+			[12.91706086,77.6219447],
+			[12.91705825,77.62187228],
+			[12.91699027,77.62187496],
+			[12.91700857,77.62174621],
+			[12.91691707,77.62170598],
+			[12.91693537,77.62159601],
+			[12.99989, 77.676281],
+			[12.97261452, 77.61962324],
+			[12.93708269, 77.60165895],
+			[12.93052432, 77.5435102]
+		];
+
+		for (i = 0; i < users.length; i++) {
+			var userMarker = new google.maps.Marker({ 
+				position: new google.maps.LatLng(users[i][0], users[i][1]),
+				icon:userIm,
+				map: map,
+				title: 'users'
+			});
+		}
+		for (i = 0; i < locations.length; i++) {
+			var marker = new google.maps.Marker({ 
+				position: new google.maps.LatLng(locations[i][1], locations[i][2]), 
+				icon:image,
+				map: map,
+				title: 'Traffic Signal Here'
+			});
+		} */
+        directionsDisplay.setMap(map);
+        trafficLayer.setMap(map);
+		directionsDisplay.setPanel(document.getElementById('data'));
+        document.getElementById('submit').addEventListener('click', function() {
+			calculateAndDisplayRoute(directionsService, directionsDisplay);
+        });
+      }
+	  
+      function calculateAndDisplayRoute(directionsService, directionsDisplay) {
+		var waypts = [];
+		var checkboxArray = document.getElementById('waypoints');
+		for (var i = 0; i < checkboxArray.length; i++) {
+			if (checkboxArray.options[i].selected) {
+				waypts.push({
+					location: checkboxArray[i].value,
+					stopover: true
+				});
+			}
+		}
+        directionsService.route({
+			origin: document.getElementById('start').value,
+			destination: document.getElementById('end').value,
+			waypoints: waypts,
+			optimizeWaypoints: true,
+			provideRouteAlternatives: true,
+			travelMode: 'DRIVING',
+			transitOptions: {
+				departureTime: new Date( Date.now() )
+			},
+		},	function(response, status) {
+				if (status === 'OK') {
+						var temp = new Date( Date.now());
+						console.log(new Date( Date.now()));
+						window.alert( new Date( Date.now()) +"\n"+ new Date( Date.now() + 3660*1000));
+						console.log(response.routes);
+						directionsDisplay.setRouteIndex(0);
+						var rr = directionsDisplay;
+						rr.setRouteIndex(1);
+						directionsDisplay.setDirections(response);				
+						rr.setDirections(response);
+						
+						var summaryPanel = document.getElementById('data');
+						summaryPanel.innerHTML = '';
+						
+						var route = response.routes[0];
+						for (var i = 0; i < route.legs.length; i++) {
+						var routeSegment = i + 1;
+						summaryPanel.innerHTML += '<b>Route Segment: ' + routeSegment +'</b><br>';
+						summaryPanel.innerHTML += route.legs[i].start_address + ' to ';
+						summaryPanel.innerHTML += route.legs[i].end_address + '<br>';
+						summaryPanel.innerHTML += route.legs[i].duration.text + '<br><br>';						
+						summaryPanel.innerHTML += route.legs[i].distance.text + '<br><br>';
+						var routeStep = route.legs[i];
+						for (var j = 0; j < route.legs[i].steps.length; j++) {
+							var rulesMessage;
+							switch(routeStep.steps[j].maneuver) {
+								case "straight" :
+									rulesMessage = "Please follow a lane. Incase of switching lanes please use indicators";
+									break;
+								case "turn-right" :
+									rulesMessage = "Turn on right side indicator and take a smooth right turn ";
+									break;
+								case "turn-left" :
+									rulesMessage = "Turn on left side indicator and take a smooth left turn ";
+									break;
+								case "keep-left" :
+									rulesMessage = "Keep left to avoid traffic congestion and constrictions.Use indicator to switch lanes";
+									break;
+								case "keep-right" :
+									rulesMessage = "Keep right to avoid traffic congestion and constrictions.Use indicator to switch lanes";
+									break;
+								case "turn-sharp-left" :
+									rulesMessage = "Turn on left side indicator.Please make sure you have a clear sight while taking sharp turns.";
+									break;
+								case "turn-sharp-right" :
+									rulesMessage = "Turn on right side indicator.Please make sure you have a clear sight while taking sharp turns.";
+									break;
+								case "uturn-left" :
+									rulesMessage = "Turn on left side indicator.Please make sure you allow other vehicles passage";
+									break;
+								case "uturn-right" :
+									rulesMessage = "Turn on right side indicator.Please make sure you allow other vehicles passage";
+									break;
+								default:
+									rulesMessage = "Please foloow traffic instincts to avoid creating traffic congestions";
+							}
+							alert("Sign : "+routeStep.steps[j].maneuver+"\n"+rulesMessage+"\n"+retSpeedMessage());//routeStep.steps[j].distance.text+"\n"+routeStep.steps[j].start_point.lat.length);
+						}
+						var dot = new google.maps.MarkerImage("https://lh3.googleusercontent.com/5OM8W6oF0NdKd_8aEKlpSybDejudy-AFsxT6E3p_Acb9iLNCrdQXwhXwJhsNcVAJNhs=w300", null, null, null, new google.maps.Size(32,32));
+						route.legs.forEach(function(leg){
+							leg.steps.forEach(function(step){
+								step.path.forEach(function(point){
+									//debug_panel.innerHTML+=point+"<br/>";
+									//console.log(point.lat()+ "," +point.lng());
+									for (var c = 0; c < locations.length; c++) {
+										var p1 = new google.maps.LatLng(locations[c][1],locations[c][1]);
+										if(checkInRange( p1,new google.maps.LatLng(point.lat(),point.lng()))==true){
+											alert(p1 +"is in range");
+										}
+										else var range=false;
+									}
+								});
+							});
+						});
+						}
+				}
+				else {
+					window.alert('Directions request failed due to ' + status);
+				}
+			});
+	}
+		  
+	function retSpeedMessage(){
+		var speedMessage;
+		var currentSpeed = getCurSpeed();
+		var speedLimitCurRoad = getSpeedLimit();
+		if(currentSpeed > speedLimitCurRoad){
+			speedMessage = "OVER SPEEDING , SLOW DOWN.Retire immediatly";
+		}
+		else{
+			var speedPerecentage = currentSpeed/speedLimitCurRoad ;
+			switch(true){
+				case (speedPerecentage > 0.95) :
+					speedMessage = "OVER SPEEDING YET , PLEASE SLOW DOWN";
+					break;
+				case(speedPerecentage <= 0.95 && speedPerecentage > .85 ) :
+					speedMessage = "SPEED SLIGHTLY HIGHER , REDUCE SPEED";
+					break;
+				case(speedPerecentage <= 0.85 && speedPerecentage > .70) :
+					speedMessage = "SPEED IS OPTIMUM , MAINTAIN SPEED";
+					break;
+				case(speedPerecentage <= 0.7 && speedPerecentage > .50) :
+					speedPerecentage = "SLIGHTLY INCREASE YOUR SPEED , SPEED BELOW AVERAGE ";
+					break;
+				case(speedPerecentage < 0.50) :
+					speedMessage = "INCREASE YOUR SPEED , YOU MIGHT BE CAUSING TRAFFIC";
+					break;
+				default :
+					speedMessage = "Unable to retrive speed ,checking internet connection";
+			}
+		}
+		return speedMessage ;
+	}
+	function getCurSpeed(){
+		return getRandomInt(45 , 97);
+	}
+	function getRandomInt(min, max) {
+		return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
+	function getSpeedLimit(){
+		var limit = 80;
+		return limit;
+	}
+	
+  </script>
+	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1ootnoC3lZr0rkRKqE07jCUJicuvsGzI&callback=initMap"></script>
+	<script type="text/javascript" src="js/createSlot.js"></script>
+	<script type="text/javascript" src="js/allotSlot.js"></script>
+</body>
+</html>
